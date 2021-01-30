@@ -30,26 +30,25 @@ app.get("/api/timestamp",function(req,res){
 })
 
 //input date
-app.get("/api/timestamp/:date",function(req,res){
-  var date_string = req.params.date
+app.get("/api/timestamp/:date", (req, res) => {
+  let dateString = req.params.date;
 
-  if(/^\d{4}\-\d{2}\-\d{2}$/.test(date_string)){
-    res.json({
-      unix: new Date(date_string).getTime(), 
-      utc : new Date(date_string).toUTCString()
-    })
-    if(req.params.date === 'Invalid Date'){
-      res.json({ error : "Invalid Date" })
+  if (/^\d{5,}/.test(dateString)) {
+        const dateInt = parseInt(dateString);
+    //Date regards numbers as unix timestamps, strings are processed differently
+    res.json({ unix: dateInt, utc: new Date(dateInt).toUTCString() });
+      
+  } else {
+
+    let dateObject = new Date(dateString);
+
+    if (dateObject.toString() === "Invalid Date") {
+      res.json({ error: "Invalid Date" });
+    } else {
+      res.json({ unix: dateObject.valueOf(), utc: dateObject.toUTCString() });
     }
   }
-  else {
-    var date_int = parseInt(req.params.date)
-    res.json({
-      unix: date_int, 
-      utc : new Date(date_int).toUTCString()
-    })
-  }
-})
+});
 
 
 // listen for requests :)
